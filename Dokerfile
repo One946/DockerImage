@@ -1,0 +1,23 @@
+# Utilizza un'immagine di Ubuntu come base
+FROM ubuntu:latest
+
+
+# Aggiorna i pacchetti di sistema e installa Apache e il server SSH
+RUN apt-get update && \
+    apt-get install -y apache2 openssh-server
+
+
+# Imposta la password per l'account root
+RUN echo 'root:password' | chpasswd
+
+
+# Abilita il login di root tramite SSH (da evitare in ambienti di produzione)
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+
+# Apri la porta 22 per SSH e la porta 80 per Apache
+EXPOSE 22 80
+
+
+# Avvia i servizi SSH e Apache all'avvio del container
+CMD service ssh start && service apache2 start
